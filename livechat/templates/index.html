@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>LiveChat</title>
+  <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
+  <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>Kuhn's LiveChat</h1>
+    <hr>
+      WebSocket status : <span id="status"></span>
+    <hr>
+    <div class="jumbotron">
+      <div class="container">
+        <h1>Últimas mensagens</h1>
+
+        <div class="messages" style="height: 395px; overflow-y: scroll;" >
+          {% for m in messages %}
+            <p><small>{{ m.created_at }}</small> {{ m.message }}</p>
+          {% end %}
+        </div>
+
+      </div>
+    </div>
+    <form id="add-message" action="/add" method="post" class="form-horizontal">
+      <div class="form-group">
+        <div class="col-lg-10">
+          <input type="text" class="form-control" id="message" placeholder="Escreva a sua mensagem..." name="message">
+        </div>
+      </div>
+    </form>
+  </div>
+  <script>
+    var ws = new WebSocket('ws://localhost:8888/ws');
+    var $status = $('#status');
+    var $messages = $('.messages');
+
+    ws.onopen = function(){
+      $status.attr("class", 'label label-success');
+      $status.text('open');
+    };
+    ws.onmessage = function(ev){
+      $status.attr("class", 'label label-info');
+      $status.hide();
+      $status.fadeIn("slow");
+      $status.text('recieved message');
+
+      var json = JSON.parse(ev.data);
+      var $p = $('<p>').html("<small>"+json.created_at+"</small> "+json.message);
+      $messages.append($p);
+      $messages.scrollTop($messages.height());
+    };
+    ws.onclose = function(ev){
+      $status.attr("class", 'label label-important');
+      $status.text('closed');
+    };
+    ws.onerror = function(ev){
+      $status.attr("class", 'label label-warning');
+      $status.text('error occurred');
+    };
+
+    $form = $("#add-message");
+    var form_submit_callback = function(event) {
+      event.preventDefault();
+      var $field = $("#message");
+      ws.send($field.val());
+      $field.val("");
+    };
+    $form.submit(form_submit_callback);
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+
+MONGO_HOST = '192.168.2.56'
+MONGO_PORT = 27017
+
+DATETIME_FORMAT = "%d/%m/%Y %H:%I"
+DATE_FORMAT = "%d/%m/%Y"

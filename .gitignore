@@ -34,3 +34,10 @@ nosetests.xml
 .mr.developer.cfg
 .project
 .pydevproject
+
+# VirtualEnv Folder
+env
+activate
+
+# Sublime project
+*.sublime-*
